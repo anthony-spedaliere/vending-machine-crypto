@@ -1,0 +1,7 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^0.15.11",
+    "hardhat": "^2.23.0"
+  }
+}
