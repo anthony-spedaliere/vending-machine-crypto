@@ -37,4 +37,23 @@ contract ChangeCoin is Initializable, ERC20Upgradeable, UUPSUpgradeable, Ownable
      * @param newImplementation The address of the new implementation contract
      */
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner{}
+
+    /**
+     * @notice Mints new tokens to a specified address
+     * @dev Only the owner can mint new tokens
+     * @param to The address that will receive the minted tokens
+     * @param amount The amount of tokens to mint
+     */
+    function mint(address to, uint256 amount) public onlyOwner {
+        _mint(to, amount);
+    }
+
+    /**
+     * @notice Burns tokens from the caller's balance
+     * @dev Any token holder can burn their own tokens
+     * @param amount The amount of tokens to burn
+     */
+    function burn(uint256 amount) public {
+        _burn(msg.sender, amount);
+    }
 }
