@@ -4,10 +4,8 @@ import { Client, Account, Databases } from "appwrite";
 export const client = new Client();
 
 client
-  .setEndpoint(
-    import.meta.env.VITE_APPWRITE_ENDPOINT || "https://fra.cloud.appwrite.io/v1"
-  )
-  .setProject(import.meta.env.VITE_APPWRITE_PROJECT || "680c2621000dee9fb6f1");
+  .setEndpoint(import.meta.env.VITE_APPWRITE_ENDPOINT)
+  .setProject(import.meta.env.VITE_APPWRITE_PROJECT);
 
 // Export account instance to manage authentication
 export const account = new Account(client);
