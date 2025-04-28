@@ -3,5 +3,8 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-ignition": "^0.15.11",
     "hardhat": "^2.23.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^5.3.0"
   }
 }
