@@ -2,10 +2,10 @@ const { expect } = require("chai");
 const { ethers, upgrades } = require("hardhat");
 
 describe("ChangeCoin (UUPS)", function () {
-  let ChangeCoin, changeCoin, owner, addr1;
+  let ChangeCoin, changeCoin, owner, addr1, addr2;
 
   beforeEach(async () => {
-    [owner, addr1] = await ethers.getSigners();
+    [owner, addr1, addr2] = await ethers.getSigners();
     ChangeCoin = await ethers.getContractFactory("ChangeCoin");
     changeCoin = await upgrades.deployProxy(ChangeCoin, [], {
       initializer: "initialize",
@@ -80,6 +80,57 @@ describe("ChangeCoin (UUPS)", function () {
     await changeCoin.transfer(addr1.address, transferAmount);
     await expect(
       changeCoin.connect(addr1).burn(burnAmount)
+    ).to.be.revertedWithCustomError(changeCoin, "ERC20InsufficientBalance");
+  });
+
+  it("transfer between users", async function () {
+    const initialAdd1Transfer = ethers.parseEther("500");
+    const transferToAdd2Amount = ethers.parseEther("200");
+
+    await changeCoin.transfer(addr1.address, initialAdd1Transfer);
+    await changeCoin
+      .connect(addr1)
+      .transfer(addr2.address, transferToAdd2Amount);
+
+    expect(await changeCoin.balanceOf(addr1.address)).to.equal(
+      initialAdd1Transfer - transferToAdd2Amount
+    );
+
+    expect(await changeCoin.balanceOf(addr2.address)).to.equal(
+      transferToAdd2Amount
+    );
+  });
+
+  it("cannot transfer to zero address", async function () {
+    const transferAmount = ethers.parseEther("100");
+    await expect(
+      changeCoin.transfer(ethers.ZeroAddress, transferAmount)
+    ).to.be.revertedWithCustomError(changeCoin, "ERC20InvalidReceiver");
+  });
+
+  it("cannot transfer from zero address", async function () {
+    const transferAmount = ethers.parseEther("100");
+    // Create a transaction with from address set to zero
+    const tx = {
+      from: ethers.ZeroAddress,
+      to: changeCoin.target,
+      data: changeCoin.interface.encodeFunctionData("transfer", [
+        addr1.address,
+        transferAmount,
+      ]),
+    };
+
+    await expect(ethers.provider.call(tx)).to.be.revertedWithCustomError(
+      changeCoin,
+      "ERC20InvalidSender"
+    );
+  });
+
+  it("cannot transfer with insufficient funds", async function () {
+    const transferAmount = ethers.parseEther("100");
+
+    await expect(
+      changeCoin.connect(addr1).transfer(addr2.address, transferAmount)
     ).to.be.revertedWithCustomError(changeCoin, "ERC20InsufficientBalance");
   });
 });
