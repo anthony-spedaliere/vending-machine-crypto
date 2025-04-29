@@ -14,7 +14,7 @@ describe("ChangeCoin (UUPS)", function () {
     await changeCoin.waitForDeployment();
   });
 
-  it("should initialize with 1 million tokens to owner", async function () {
+  it("ChangeCoin with symbol CNGX should initialize with 1 million tokens to owner", async function () {
     const totalSupply = await changeCoin.totalSupply();
     const name = await changeCoin.name();
     const symbol = await changeCoin.symbol();
