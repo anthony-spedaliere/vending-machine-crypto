@@ -21,6 +21,7 @@ Instructions for setting up and running the project will be added soon.
    - `hotfix/security-patch`
    - `docs/api-documentation`
    - `refactor/payment-processing`
+   - `contract/escrow-contract`
 
 2. **Include ticket/issue numbers** (if using a tracker):
 
