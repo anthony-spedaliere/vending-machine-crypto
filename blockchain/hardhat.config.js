@@ -1,5 +1,4 @@
-import * as dotenv from "dotenv";
-dotenv.config();
+require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
 require("@nomicfoundation/hardhat-ignition");
@@ -13,7 +12,7 @@ module.exports = {
   },
   networks: {
     sepolia: {
-      url: `https://eth-sepolia.g.alchemy.com/${process.env.ALCHEMY_API_KEY}`,
+      url: `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
       accounts: [process.env.ACCOUNT_PRIV_KEY],
     },
   },

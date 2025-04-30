@@ -4,13 +4,10 @@ module.exports = buildModule("ChangeCoinModule", (m) => {
   // Deploy the ChangeCoin implementation contract
   const changeCoinImpl = m.contract("ChangeCoin");
 
-  // Encode the initialization data for the proxy
-  const initData = changeCoinImpl.interface.encodeFunctionData("initialize");
-
-  // Deploy the proxy contract
+  // Deploy the proxy contract with initialization data
   const changeCoinProxy = m.contract("ChangeCoinProxy", [
     changeCoinImpl,
-    initData,
+    "0x8129fc1c",
   ]);
 
   // Return the deployed contracts
