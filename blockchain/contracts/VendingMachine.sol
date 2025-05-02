@@ -22,14 +22,10 @@ contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, Ow
     // Base URI for token metadata
     string private _baseTokenURI;
     
-    // Mapping to store token metadata
-    mapping(uint256 => string) private _tokenURIs;
-    
     // Maximum number of tokens that can be minted in a single batch
     uint256 public maxBatchSize;
     
     // Events
-    event TokenURIUpdated(uint256 indexed tokenId, string tokenURI);
     event BaseURIUpdated(string baseURI);
     event BatchMintLimitUpdated(uint256 newLimit);
 
@@ -115,21 +111,11 @@ contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, Ow
     /**
      * @notice Sets the base URI for all token metadata
      * @param baseURI The new base URI
+     * @dev This should point to where your metadata is hosted (e.g., IPFS gateway)
      */
     function setBaseURI(string memory baseURI) public onlyOwner {
         _baseTokenURI = baseURI;
         emit BaseURIUpdated(baseURI);
-    }
-
-    /**
-     * @notice Sets the URI for a specific token
-     * @param tokenId The ID of the token
-     * @param tokenURI The new URI for the token
-     */
-    function setTokenURI(uint256 tokenId, string memory tokenURI) public onlyOwner {
-        require(_exists(tokenId), "ERC721: URI set of nonexistent token");
-        _tokenURIs[tokenId] = tokenURI;
-        emit TokenURIUpdated(tokenId, tokenURI);
     }
 
     /**
@@ -144,17 +130,12 @@ contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, Ow
      * @notice Returns the URI for a specific token
      * @param tokenId The ID of the token
      * @return The URI for the token
+     * @dev The URI should point to a JSON file containing the token's metadata
+     * @dev The JSON should follow the ERC721 metadata standard
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "ERC721: URI query for nonexistent token");
-        
-        string memory _tokenURI = _tokenURIs[tokenId];
         string memory base = _baseURI();
-        
-        if (bytes(_tokenURI).length > 0) {
-            return _tokenURI;
-        }
-        
         return bytes(base).length > 0 ? string(abi.encodePacked(base, tokenId.toString())) : "";
     }
 
