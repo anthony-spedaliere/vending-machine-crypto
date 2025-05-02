@@ -1,5 +1,5 @@
 /**
- * @title Change Coin Contract
+ * @title ChangeCoin
  * @author Anthony Spedaliere
  * @notice This contract implements a basic upgradeable ERC20 token using open zeppelin library.
  */

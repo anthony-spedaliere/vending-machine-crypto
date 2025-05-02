@@ -1,13 +1,13 @@
+import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
+
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
-
-import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
 /**
  * @title ChangeCoinProxy
  * @author Anthony Spedaliere
- * @notice This contract is the UUPS proxy for the ChangeCoin implementation
- * @dev This proxy contract delegates all calls to the ChangeCoin implementation
+ * @notice This contract is the UUPS proxy for the ChangeCoin implementation contract
+ * @dev This proxy contract delegates all calls to the ChangeCoin implementation contract
  */
 contract ChangeCoinProxy is ERC1967Proxy {
     /**
