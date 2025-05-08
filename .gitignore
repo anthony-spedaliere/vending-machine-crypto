@@ -12,6 +12,9 @@ blockchain/coverage.json
 # Ignition deployment files
 blockchain/ignition/deployments/
 
+# Resources
+blockchain/resources/
+
 # Environment variables
 .env
 **/.env
