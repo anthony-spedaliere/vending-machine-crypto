@@ -8,16 +8,16 @@ import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Ini
 import {ERC721Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import {OwnableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
 contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, OwnableUpgradeable {
-    using Counters for Counters.Counter;
+    using Strings for uint256;
     
     // Token ID counter
-    Counters.Counter private _tokenIdCounter;
+    uint256 private _tokenIdCounter;
     
     // Base URI for token metadata
     string private _baseTokenURI;
@@ -62,8 +62,8 @@ contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, Ow
      * @return The ID of the newly minted token
      */
     function safeMint(address to) public returns (uint256) {
-        uint256 tokenId = _tokenIdCounter.current();
-        _tokenIdCounter.increment();
+        uint256 tokenId = _tokenIdCounter;
+        _tokenIdCounter++;
         _safeMint(to, tokenId);
         return tokenId;
     }
@@ -90,13 +90,13 @@ contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, Ow
         require(amount <= maxBatchSize, "Amount exceeds maximum batch size");
         
         // Get the current token ID before minting
-        uint256 startTokenId = _tokenIdCounter.current();
+        uint256 startTokenId = _tokenIdCounter;
         
         // Mint all tokens
         for (uint256 i = 0; i < amount; i++) {
-            _tokenIdCounter.increment();
             _safeMint(to, startTokenId + i);
         }
+        _tokenIdCounter += amount;
     }
 
     /**
@@ -104,7 +104,8 @@ contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, Ow
      * @param tokenId The ID of the token to burn
      */
     function burn(uint256 tokenId) public {
-        require(_isApprovedOrOwner(msg.sender, tokenId), "ERC721: caller is not token owner or approved");
+        require(ownerOf(tokenId) == msg.sender || getApproved(tokenId) == msg.sender || isApprovedForAll(ownerOf(tokenId), msg.sender), 
+            "ERC721: caller is not token owner or approved");
         _burn(tokenId);
     }
 
@@ -134,9 +135,12 @@ contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, Ow
      * @dev The JSON should follow the ERC721 metadata standard
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(_exists(tokenId), "ERC721: URI query for nonexistent token");
-        string memory base = _baseURI();
-        return bytes(base).length > 0 ? string(abi.encodePacked(base, tokenId.toString())) : "";
+        try this.ownerOf(tokenId) returns (address) {
+            string memory base = _baseURI();
+            return bytes(base).length > 0 ? string(abi.encodePacked(base, tokenId.toString())) : "";
+        } catch {
+            revert("ERC721: URI query for nonexistent token");
+        }
     }
 
     /**
@@ -144,6 +148,6 @@ contract VendingMachine is Initializable, ERC721Upgradeable, UUPSUpgradeable, Ow
      * @return The total number of tokens
      */
     function totalSupply() public view returns (uint256) {
-        return _tokenIdCounter.current();
+        return _tokenIdCounter;
     }
 }
